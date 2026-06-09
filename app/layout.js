@@ -55,6 +55,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* PWA — Apple Touch Icon (iOS home screen) */}
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+
+        {/* PWA — Theme colour (Android status bar + browser toolbar) */}
+        <meta name="theme-color" content="#1E120C" />
+
+        {/* Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
