@@ -14,6 +14,23 @@ function Shimmer({ width = 'w-32' }) {
   return <span className={`inline-block ${width} h-4 rounded bg-gray-200 animate-pulse`} aria-hidden="true" />
 }
 
+function BrandImage({ src, alt }) {
+  const [error, setError] = useState(false)
+  if (!src || error) {
+    return <span className="w-8 h-8 rounded-full bg-amber-100 flex-shrink-0 flex items-center justify-center text-amber-500 text-xs shadow-sm" aria-hidden="true">🌿</span>
+  }
+  return (
+    <img 
+      src={src} 
+      alt={alt || ''} 
+      width={32} height={32}
+      className="w-8 h-8 object-contain rounded flex-shrink-0 bg-white" 
+      loading="lazy"
+      onError={() => setError(true)}
+    />
+  )
+}
+
 export default function RecipeClient({ recipeName, ingredients, steps }) {
   const [members, setMembers] = useState(1)
   const decrement = () => setMembers((m) => Math.max(1, m - 1))
@@ -169,14 +186,24 @@ export default function RecipeClient({ recipeName, ingredients, steps }) {
               return (
                 <li key={ing.ingredient_name} className="flex items-center justify-between bg-white rounded-xl px-4 py-3 border border-amber-100 shadow-sm hover:border-orange-200 transition-colors">
                   <div className="flex items-center gap-3 min-w-0">
-                    {ing.brand_promotion_logo ? (
-                      <img src={ing.brand_promotion_logo} alt="" width={32} height={32}
-                           className="w-8 h-8 object-contain rounded flex-shrink-0" loading="lazy" />
-                    ) : (
-                      <span className="w-8 h-8 rounded-full bg-amber-100 flex-shrink-0 flex items-center justify-center text-amber-500 text-xs" aria-hidden="true">🌿</span>
-                    )}
+                    <BrandImage src={ing.brand_promotion_logo} alt={ing.brand_name} />
                     <span className="text-gray-700 font-medium truncate">
-                      {name === null ? <Shimmer width="w-28" /> : <span lang={currentLanguage}>{name}</span>}
+                      {name === null ? <Shimmer width="w-28" /> : (
+                        ing.affiliate_url ? (
+                          <a 
+                            href={ing.affiliate_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-[#E05A00] hover:underline font-bold flex items-center gap-1.5"
+                            title={`Buy from ${ing.brand_name || 'partner'}`}
+                          >
+                            <span lang={currentLanguage}>{name}</span>
+                            <svg className="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                          </a>
+                        ) : (
+                          <span lang={currentLanguage}>{name}</span>
+                        )
+                      )}
                     </span>
                   </div>
                   <span className="text-orange-600 font-semibold text-sm ml-4 flex-shrink-0 tabular-nums">

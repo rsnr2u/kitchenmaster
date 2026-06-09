@@ -8,7 +8,7 @@ import { revalidatePath } from 'next/cache'
  * Validates that the current user is the authorized admin.
  * Throws an error if unauthorized.
  */
-async function requireAdmin() {
+export async function requireAdmin() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 

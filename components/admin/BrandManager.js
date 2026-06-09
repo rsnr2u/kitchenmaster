@@ -2,23 +2,75 @@
 
 import { useRef, useState } from 'react'
 import { addBrandRule, deleteBrandRule } from '@/app/admin/actions'
+import { uploadBrandLogo } from '@/app/admin/storageActions'
 
 export default function BrandManager({ initialRules }) {
   const formRef = useRef(null)
+  const fileInputRef = useRef(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
   const [errorMsg, setErrorMsg] = useState('')
+  const [selectedFile, setSelectedFile] = useState(null)
+  const [previewUrl, setPreviewUrl] = useState(null)
+
+  function handleFileChange(e) {
+    setErrorMsg('')
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate size (< 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      setErrorMsg('Image size must be less than 2MB.')
+      return
+    }
+
+    // Validate type
+    if (!file.type.startsWith('image/')) {
+      setErrorMsg('Only image files (PNG, JPG, SVG, WebP) are allowed.')
+      return
+    }
+
+    setSelectedFile(file)
+    setPreviewUrl(URL.createObjectURL(file))
+  }
+
+  function clearFile() {
+    setSelectedFile(null)
+    setPreviewUrl(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
 
   async function handleAdd(formData) {
     setErrorMsg('')
     setIsSubmitting(true)
     
+    // 1. Upload image if selected
+    if (selectedFile) {
+      const uploadData = new FormData()
+      uploadData.append('file', selectedFile)
+      
+      const { publicUrl, error: uploadError } = await uploadBrandLogo(uploadData)
+      
+      if (uploadError) {
+        setErrorMsg(uploadError)
+        setIsSubmitting(false)
+        return
+      }
+      
+      // Inject the securely uploaded public URL into the database form data
+      formData.set('brand_logo_url', publicUrl)
+    }
+
+    // 2. Save rule to database
     const { error, success } = await addBrandRule(formData)
     
     if (error) {
       setErrorMsg(error)
     } else if (success) {
       formRef.current?.reset()
+      clearFile()
     }
     
     setIsSubmitting(false)
@@ -76,15 +128,42 @@ export default function BrandManager({ initialRules }) {
               className="w-full px-5 py-4 rounded-xl border border-[#1E120C]/10 bg-white text-[#1E120C] font-medium focus:outline-none focus:ring-2 focus:ring-[#E05A00]/50 transition-all shadow-sm"
             />
           </div>
-          <div>
-            <label htmlFor="brand_logo_url" className="block text-xs font-bold text-[#1E120C] uppercase tracking-wider mb-2">Logo URL</label>
-            <input 
-              id="brand_logo_url"
-              name="brand_logo_url" 
-              type="url" 
-              placeholder="https://.../logo.png" 
-              className="w-full px-5 py-4 rounded-xl border border-[#1E120C]/10 bg-white text-[#1E120C] font-medium focus:outline-none focus:ring-2 focus:ring-[#E05A00]/50 transition-all shadow-sm"
-            />
+          <div className="col-span-1 sm:col-span-2">
+            <label className="block text-xs font-bold text-[#1E120C] uppercase tracking-wider mb-2">Brand Logo (Optional)</label>
+            
+            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-[#1E120C]/10 border-dashed rounded-xl hover:border-[#E05A00]/50 transition-colors bg-white">
+              <div className="space-y-1 text-center flex flex-col items-center">
+                {previewUrl ? (
+                  <div className="relative mb-4 group">
+                    <div className="w-24 h-24 rounded-xl border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center p-2">
+                      <img src={previewUrl} alt="Preview" className="max-w-full max-h-full object-contain" />
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={clearFile}
+                      className="absolute -top-3 -right-3 bg-red-100 text-red-600 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold shadow-sm hover:bg-red-200 transition-colors"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ) : (
+                  <svg className="mx-auto h-12 w-12 text-[#1E120C]/20" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+                
+                <div className="flex text-sm text-[#1E120C]/60 font-medium">
+                  <label htmlFor="file-upload" className="relative cursor-pointer rounded-md font-bold text-[#E05A00] hover:text-[#c24e00] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#E05A00]">
+                    <span>Upload a file</span>
+                    <input id="file-upload" name="file-upload" type="file" ref={fileInputRef} className="sr-only" accept="image/png, image/jpeg, image/svg+xml, image/webp" onChange={handleFileChange} />
+                  </label>
+                  <p className="pl-1">or drag and drop</p>
+                </div>
+                <p className="text-xs text-[#1E120C]/40 font-bold uppercase tracking-widest mt-2">
+                  PNG, JPG, SVG up to 2MB
+                </p>
+              </div>
+            </div>
           </div>
           <div>
             <label htmlFor="affiliate_url" className="block text-xs font-bold text-[#1E120C] uppercase tracking-wider mb-2">Affiliate Link URL</label>
