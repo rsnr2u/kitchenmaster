@@ -4,7 +4,7 @@ import { getRecipeList } from '@/lib/supabase'
 export const revalidate = 86400 // Revalidate sitemap every 24 hours
 
 export default async function sitemap() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://kitchenmaster-ai.vercel.app').replace(/\/$/, '')
 
   // ── 1. Static Routes ──────────────────────────────────────────────────────
   const staticRoutes = [
