@@ -1,0 +1,26 @@
+/*
+ * app/globals.css — Global styles for KitchenMaster
+ * Tailwind CSS v4: single @import directive replaces the old @tailwind directives.
+ */
+@import "tailwindcss";
+
+/* ── Base resets ─────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Telugu font support ─────────────────────────────────────────── */
+/* lang="te" elements will inherit this stack for correct glyph rendering */
+:lang(te) {
+  font-family: 'Noto Sans Telugu', 'Mandali', ui-sans-serif, sans-serif;
+}
