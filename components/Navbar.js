@@ -81,8 +81,8 @@ export default function Navbar() {
           <span className="hidden sm:inline font-black text-[#1E120C] text-xl tracking-tight">KitchenMaster<span className="text-[#E05A00]">.</span></span>
         </Link>
 
-        {/* Centre nav links */}
-        <nav className="flex items-center gap-2 bg-[#FAF6F0]/80 p-1.5 rounded-full border border-[#1E120C]/5 shadow-inner" aria-label="Primary navigation">
+        {/* Centre nav links — desktop only; replaced by BottomNav on mobile */}
+        <nav className="hidden md:flex items-center gap-2 bg-[#FAF6F0]/80 p-1.5 rounded-full border border-[#1E120C]/5 shadow-inner" aria-label="Primary navigation">
           <Link
             href="/"
             id="nav-home"

@@ -70,8 +70,8 @@ export default function RootLayout({ children }) {
         <LanguageProvider>
           <LanguageGateway>
             <Navbar />
-            {/* pb-24 on mobile creates clearance so BottomNav never covers content */}
-            <main className="pb-24 md:pb-0">
+            {/* pb-28 on mobile creates clearance so BottomNav never covers content */}
+            <main className="pb-28 md:pb-0">
               {children}
             </main>
             <BottomNav />
