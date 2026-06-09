@@ -10,6 +10,10 @@ const nextConfig = {
       },
     ],
   },
+
+  // Hide the Next.js dev toolbar "N" badge during local development.
+  // This badge is dev-only and never appears in production builds.
+  devIndicators: false,
 }
 
 export default nextConfig

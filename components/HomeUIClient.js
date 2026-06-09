@@ -16,7 +16,7 @@ export default function HomeUIClient({ children, recipesCount }) {
           {t('home.hero.badge')}
         </span>
 
-        <h1 className="text-6xl sm:text-7xl md:text-8xl font-black tracking-tighter mb-6 text-[#1E120C] drop-shadow-sm">
+        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-6 text-[#1E120C] drop-shadow-sm">
           {t('home.hero.title')}
         </h1>
 
