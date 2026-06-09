@@ -14,6 +14,7 @@
 
 import './globals.css'
 import Navbar             from '@/components/Navbar'
+import BottomNav          from '@/components/BottomNav'
 import { LanguageProvider } from '@/context/LanguageContext'
 import LanguageGateway      from '@/components/LanguageGateway'
 
@@ -23,7 +24,7 @@ export const metadata = {
     template: '%s | KitchenMaster - Smart Cooking Guide',
   },
   description: 'Step-by-step authentic Telugu cooking recipes with smart serving size adjustments and dynamic AI timers.',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://kitchenmaster-ai.vercel.app'),
   robots: {
     index: true,
     follow: true,
@@ -38,7 +39,7 @@ export const metadata = {
   openGraph: {
     title: 'KitchenMaster — Smart Cooking Guide',
     description: 'Step-by-step authentic Telugu cooking recipes with smart serving size adjustments and dynamic AI timers.',
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://kitchenmaster-ai.vercel.app',
     siteName: 'KitchenMaster',
     locale: 'en_IN',
     type: 'website',
@@ -69,7 +70,11 @@ export default function RootLayout({ children }) {
         <LanguageProvider>
           <LanguageGateway>
             <Navbar />
-            {children}
+            {/* pb-24 on mobile creates clearance so BottomNav never covers content */}
+            <main className="pb-24 md:pb-0">
+              {children}
+            </main>
+            <BottomNav />
           </LanguageGateway>
         </LanguageProvider>
       </body>
